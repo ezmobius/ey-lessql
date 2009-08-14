@@ -1,0 +1,17 @@
+#!/sbin/runscript
+
+depend() {
+	need net
+}
+
+start() {
+	ebegin "Starting mongod"
+	/usr/local/bin/mongod --dbpath /db/mongodb
+	eend $?
+}
+
+stop() {
+	ebegin "Shutting down atd"
+	start-stop-daemon --stop --quiet --pidfile /var/run/atd.pid
+	eend $?
+}
