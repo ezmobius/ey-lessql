@@ -1,0 +1,42 @@
+user <%= @node[:owner_name] %> <%= @node[:owner_name] %>;
+worker_processes 4;
+pid /var/run/nginx.pid;
+
+events {
+  worker_connections 8192;
+  use epoll;
+}
+
+http {
+
+  include /etc/nginx/mime.types;
+
+  default_type application/octet-stream;
+
+  log_format main '$remote_addr - $remote_user [$time_local] '
+                  '"$request" $status $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+  sendfile on;
+
+  tcp_nopush        on;
+
+  server_names_hash_bucket_size  128;
+
+  gzip              on;
+  gzip_http_version 1.0;
+  gzip_comp_level   2;
+  gzip_proxied      any;
+  gzip_buffers      16 8k;
+  gzip_types        text/plain text/html text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+  # gzip_disable      "MSIE [1-6]\.(?!.*SV1)";
+
+  passenger_root /usr/lib/passenger;
+  passenger_max_pool_size <%= @pool_size %>;
+  passenger_pool_idle_time 3600;
+  passenger_default_user <%= @node[:owner_name] %>;
+  include /etc/nginx/servers/*.conf;
+
+}
+
+# look ma overwritten!
